@@ -1,0 +1,13 @@
+{
+  "name": "systemet-notifier",
+  "description": "A bot for posting new beer from systembolget in a slack channel",
+  "repository": "https://github.com/mlonn/slack-bot",
+  "logo": "http://imgur.com/a/F3dkl",
+  "keywords": ["node", "slack", "beer"],
+  "env": {
+    "SLACK_WEBHOOK": {
+      "description": "slack webhook url",
+      "required": true
+    }
+  }
+}
