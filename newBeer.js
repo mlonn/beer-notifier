@@ -22,9 +22,6 @@ function newBeer() {
     const date = new Date()
     var nextDate = new Date()
     nextDate.setDate(date.getDate()+8)
-    console.log('Whos out running\nCurrent time is: ' + date.getHours() + ':' + date.getMinutes())
-
-
     var year = date.getFullYear()
     var month = date.getMonth() + 1
     var day = date.getDate()
@@ -80,13 +77,14 @@ function newBeer() {
       }
 
       console.log(text)
+      /*
         bot.sendWebhook({
             text: text,
         }, function(err) {
             if (err) {
                 console.log(err)
             } else console.log('message sent!');
-        });
+        });*/
     })
 
 
