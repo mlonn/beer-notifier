@@ -3,19 +3,24 @@ const http = require("http");
 const schedule = require('node-schedule')
 const newBeer = require('./newBeer')
 const express = require('express');
+const ip = require("ip");
 var app = express();
-
+var Router = express.Router
 
 
 app.set('port', (process.env.PORT || 5000));
-
+app.set('ip', ip.address() || 'localhost')
 app.get('/', function (req, res) {
-  console.log(fullUrl)
   res.send('Beer')
 })
 
 var server = app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
+});
+
+app.use(function (req, res, next) {
+  console.log('Time: %d', Date.now());
+  next();
 });
 
 const rule = new schedule.RecurrenceRule()
@@ -31,12 +36,12 @@ const j = schedule.scheduleJob(rule, function(err) {
   console.log("works")
 })
 function refresh() {
-  console.log(server.address().address)
-    http.get("http://systemet-notifier.herokuapp.com", (res) => {
+    var url = 'http://' + app.get('ip') + ':' + app.get('port')
+    http.get('http://' + app.get('ip') + ':' + app.get('port'), (res) => {
         const { statusCode } = res;
-        console.log(statusCode);
+        console.log('GET: ' + statusCode + ' from ' + url)
     });
 }
 newBeer()
 refresh()
-setInterval(refresh, 300000); // every 5 minutes (300000)
+setInterval(refresh, 2000); // every 5 minutes (300000)

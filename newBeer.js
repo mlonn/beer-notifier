@@ -77,14 +77,14 @@ function newBeer() {
       }
 
       console.log(text)
-      /*
+
         bot.sendWebhook({
             text: text,
         }, function(err) {
             if (err) {
                 console.log(err)
             } else console.log('message sent!');
-        });*/
+        });
     })
 
 
