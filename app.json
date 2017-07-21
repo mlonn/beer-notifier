@@ -8,6 +8,10 @@
     "SLACK_WEBHOOK": {
       "description": "slack webhook url",
       "required": true
+    },
+    "APP_URL": {
+      "description": "<app-name>.herokuapp.com",
+      "required": true
     }
   }
 }
