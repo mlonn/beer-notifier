@@ -36,6 +36,5 @@ function refresh() {
         console.log('GET: ' + statusCode + ' -> ' + url )
     });
 }
-beer.weeklyBeer()
 refresh()
 setInterval(refresh, 30000); // every 5 minutes (300000)
