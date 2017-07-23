@@ -1,7 +1,7 @@
 'use strict';
 const http = require("http");
 const schedule = require('node-schedule')
-const newBeer = require('./newBeer')
+const beer = require('./beer-release')
 const express = require('express');
 var app = express();
 var Router = express.Router
@@ -18,7 +18,7 @@ var server = app.listen(app.get('port'), function() {
 });
 
 const rule = new schedule.RecurrenceRule()
-rule.day = 0
+rule.dayOfWeek = 0
 rule.hour = 12
 rule.minute = 0
 rule.second = 0
@@ -26,7 +26,7 @@ const j = schedule.scheduleJob(rule, function(err) {
   if (err) {
     console.log(err)
   }
-  newBeer()
+  beer.weeklyBeer()
   console.log("works")
 })
 function refresh() {
@@ -36,6 +36,6 @@ function refresh() {
         console.log('GET: ' + statusCode + ' -> ' + url )
     });
 }
-newBeer()
+beer.weeklyBeer()
 refresh()
 setInterval(refresh, 30000); // every 5 minutes (300000)
