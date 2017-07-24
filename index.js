@@ -12,7 +12,9 @@ app.set('url', (process.env.APP_URL) || 'localhost:'+app.get('port'))
 app.get('/', function (req, res) {
   res.send('Beer')
 })
-
+app.get('/release', function (req, res) {
+  res.send('release')
+})
 var server = app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
@@ -26,7 +28,10 @@ const j = schedule.scheduleJob(rule, function(err) {
   if (err) {
     console.log(err)
   }
-  beer.weeklyBeer()
+  const from = new Date()
+  const to = new Date()
+  to.setDate(from.getDate()+8)
+  beer.getBeerReleases(from, to)
 })
 function refresh() {
   var url = 'http://' + app.get('url')

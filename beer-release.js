@@ -75,19 +75,15 @@ function getReleases(unreleased_beers) {
       attatchments.push(attatchment)
     }
   }
-  console.log(attatchments)
   return attatchments
 }
-function weeklyBeer() {
-    const date = new Date()
-    var nextDate = new Date()
-    nextDate.setDate(date.getDate()+8)
-    var year = date.getFullYear()
-    var month = date.getMonth() + 1
-    var day = date.getDate()
-    var nextYear = nextDate.getFullYear()
-    var nextMonth = nextDate.getMonth() + 1
-    var nextDay = nextDate.getDate()
+function getBeerReleases(from,to) {
+    var year = from.getFullYear()
+    var month = from.getMonth() + 1
+    var day = from.getDate()
+    var nextYear = to.getFullYear()
+    var nextMonth = to.getMonth() + 1
+    var nextDay = to.getDate()
 
     day = day < 10 ? '0' + day : day
     month = month < 10 ? '0' + month : month
@@ -114,9 +110,7 @@ function weeklyBeer() {
               console.log(err)
           } else console.log('message sent!');
       });
-    })
-
-
+    });
 }
 
-module.exports = {weeklyBeer}
+module.exports = {getBeerReleases}
