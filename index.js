@@ -27,7 +27,6 @@ const j = schedule.scheduleJob(rule, function(err) {
     console.log(err)
   }
   beer.weeklyBeer()
-  console.log("works")
 })
 function refresh() {
   var url = 'http://' + app.get('url')
@@ -37,4 +36,4 @@ function refresh() {
     });
 }
 refresh()
-setInterval(refresh, 30000); // every 5 minutes (300000)
+setInterval(refresh, 300000); // every 5 minutes (300000)
