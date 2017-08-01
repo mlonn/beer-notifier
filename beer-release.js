@@ -57,7 +57,7 @@ function getAttachments(releases) {
       var date = new Date(releases[release].release)
       var title = ""
       if (releases[release].beers[beer].additional_name) {
-        title = releases[release].beers[beer].name + " " + releases[release].beers[beer].name + '\n'
+        title = releases[release].beers[beer].name + " " + releases[release].beers[beer].additional_name + '\n'
       } else {
         title = releases[release].beers[beer].name + '\n'
       }
