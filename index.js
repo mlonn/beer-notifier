@@ -48,8 +48,6 @@ require(`${__dirname}/components/user_registration.js`)(controller);
 // Send an onboarding message when a new team joins
 require(`${__dirname}/components/onboarding.js`)(controller);
 
-require(`${__dirname}/components/join.js`)(controller);
-
 const normalizedPath = require("path").join(__dirname, "skills");
 require("fs").readdirSync(normalizedPath).forEach(file => {
   require(`./skills/${file}`)(controller);
