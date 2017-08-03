@@ -1,91 +1,58 @@
-'use strict';
-require('dotenv').config()
-const http = require("http");
-const schedule = require('node-schedule')
-const beer = require('./beer-release')
-const Botkit = require('botkit')
-
-
-const mongoose = require('mongoose')
+require("dotenv").config();
+const Botkit = require("botkit");
+const mongoose = require("mongoose");
+const schedule = require("node-schedule");
+const beer = require("./components/beer/beer_release");
 
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI);
 
-const controller = Botkit.slackbot({})
+const botOptions = {
+  clientId: process.env.clientId,
+  clientSecret: process.env.clientSecret,
+  //debug: true,
+  scopes: [
+    "bot",
+    "incoming-webhook",
+    "channels:history",
+    "groups:history",
+    "im:history",
+    "mpim:history"
+  ]
+};
 
-controller.startTicking()
-const bot = controller.spawn({
-    incoming_webhook: {
-        url: process.env.SLACK_WEBHOOK
-    }
-})
+// Use a mongo database if specified, otherwise store in a JSON file local to the app.
+// Mongo is automatically configured when deploying to Heroku
+if (process.env.MONGODB_URI) {
+  const mongoStorage = require("botkit-storage-mongo")({
+    mongoUri: process.env.MONGODB_URI
+  });
+  botOptions.storage = mongoStorage;
+} else {
+  botOptions.json_file_store = `${__dirname}/.data/db/`; // store user data in a simple JSON format
+}
 
-const express = require('express')
-var app = express();
+const controller = Botkit.slackbot(botOptions);
 
+controller.startTicking();
 
-app.set('port', (process.env.PORT || 5000));
-app.set('url', (process.env.APP_URL) || 'localhost:'+app.get('port'))
-app.get('/', function (req, res) {
-  res.send('Beer')
-})
+const webserver = require(`${__dirname}/components/express_webserver.js`)(
+  controller
+);
 
-app.get('/release', function (req, res) {
-})
+require(`${__dirname}/components/keep_alive.js`)(webserver);
+// Set up a simple storage backend for keeping a record of customers
+// who sign up for the app via the oauth
+require(`${__dirname}/components/user_registration.js`)(controller);
 
+// Send an onboarding message when a new team joins
+require(`${__dirname}/components/onboarding.js`)(controller);
 
-var server = app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
+require(`${__dirname}/components/join.js`)(controller);
+
+const normalizedPath = require("path").join(__dirname, "skills");
+require("fs").readdirSync(normalizedPath).forEach(file => {
+  require(`./skills/${file}`)(controller);
 });
 
-const weeklyrule = new schedule.RecurrenceRule()
-weeklyrule.dayOfWeek = 0
-weeklyrule.hour = 12
-weeklyrule.minute = 0
-weeklyrule.second = 0
-const weeklyReminder = schedule.scheduleJob(weeklyrule, function(err) {
-  if (err) {
-    console.log(err)
-  }
-  const from = new Date()
-  const to = new Date()
-  to.setDate(from.getDate()+8)
-  beer.getBeerReleases(from, to)
-})
-const dailyrule = new schedule.RecurrenceRule()
-dailyrule.hour = 12
-dailyrule.minute = 0
-dailyrule.second = 0
-const dailyUpdate = schedule.scheduleJob(dailyrule, function(err) {
-  if (err) {
-    console.log(err)
-  }
-  beer.checkNewReleases(new Date(), sendMessage);
-})
-
-function refresh() {
-  var url = 'http://' + app.get('url')
-    http.get(url, (res) => {
-        const { statusCode } = res;
-        console.log('GET: ' + statusCode + ' -> ' + url )
-    });
-}
-function sendMessage(releases) {
-  var attachments = beer.getAttachments(releases)
-  if (attachments.length > 0) {
-    var timestamp = (new Date).getTime()/1000;
-    bot.sendWebhook({
-      attachments: attachments,
-      ts: timestamp
-    }, function(err, res) {
-      console.log(res)
-        if (err) {
-          console.log(err)
-        } else {
-          console.log('message sent!');
-        }
-    });
-  }
-}
-refresh()
-setInterval(refresh, 300000); // every 5 minutes (300000)
+require(`${__dirname}/components/beer/beer_reminders`)(controller);

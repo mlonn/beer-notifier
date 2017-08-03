@@ -12,16 +12,27 @@
   "author": "Mikael Lönn",
   "license": "MIT",
   "dependencies": {
-    "botkit": "^0.2.2",
+    "body-parser": "^1.17.2",
+    "botkit": "^0.5",
+    "botkit-storage-mongo": "^1.0.7",
+    "debug": "^2.6.8",
     "dotenv": "^4.0.0",
+    "express": "^4.15.3",
     "json": "^9.0.6",
-    "mongoose": "^4.11.4",
-    "node-schedule": "^1.1.1",
+    "mongoose": "^4.11.5",
+    "node-schedule": "^1.2.3",
+    "node-env-file": "^0.1.8",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
-    "request-promise-native": "^1.0.4"
+    "request-promise-native": "^1.0.4",
+    "wordfilter": "^0.2.6",
+    "querystring": "^0.2.0"
   },
   "devDependencies": {
-    "nodemon": "^1.11.0"
+    "eslint": "^4.3.0",
+    "eslint-config-airbnb-base": "^11.3.1",
+    "eslint-plugin-import": "^2.7.0",
+    "nodemon": "^1.11.0",
+    "prettier": "^1.5.3"
   }
 }
