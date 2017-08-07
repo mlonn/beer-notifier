@@ -21,16 +21,30 @@ module.exports = function(controller) {
           id: payload.identity.team_id,
           createdBy: payload.identity.user_id,
           url: payload.identity.url,
-          name: payload.identity.team
+          name: payload.identity.team,
+          incoming_webhooks: [payload.incoming_webhook]
         };
         var new_team = true;
+      } else {
+        var new_channel = true;
+        for (let i = 0; i < team.incoming_webhooks.length; i++) {
+          if (
+            team.incoming_webhooks[i].channel ===
+            payload.incoming_webhook.channel
+          ) {
+            new_channel = false;
+            team.incoming_webhooks[i] = payload.incoming_webhook;
+          }
+          if (new_channel) {
+            team.incoming_webhooks.push(payload.incoming_webhook);
+          }
+        }
       }
       team.bot = {
         token: payload.bot.bot_access_token,
         user_id: payload.bot.bot_user_id,
         createdBy: payload.identity.user_id,
-        app_token: payload.access_token,
-        incoming_webhook: payload.incoming_webhook
+        app_token: payload.access_token
       };
 
       var testbot = controller.spawn(team.bot);

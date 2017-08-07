@@ -35,19 +35,30 @@ module.exports = function(controller) {
           throw new Error("Error: Could not load existing teams:", err);
         } else {
           for (let i = 0; i < list.length; i++) {
-            var bot = controller.spawn(list[i].bot);
-            var message = {
-              attachments: attachments
-            };
-
-            bot.sendWebhook(
-              {
+            for (let j = 0; j < list[i].incoming_webhooks.length; j++) {
+              var options = list[i].bot;
+              options.incoming_webhook = list[i].incoming_webhooks[j];
+              var bot = controller.spawn(options);
+              var message = {
                 attachments: attachments
-              },
-              function(err, res) {
-                // handle error
-              }
-            );
+              };
+
+              bot.sendWebhook(
+                {
+                  attachments: attachments
+                },
+                function(err, res) {
+                  console.log(res);
+                  if (err) {
+                    console.log(err);
+                  }
+                  if (res === "No service") {
+                    console.log(res);
+                    list;
+                  }
+                }
+              );
+            }
           }
         }
       });
