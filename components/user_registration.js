@@ -1,4 +1,4 @@
-var debug = require("debug")("botkit:user_registration");
+const debug = require("debug")("botkit:user_registration");
 
 module.exports = function(controller) {
   /* Handle event caused by a user logging in with oauth */
@@ -15,7 +15,7 @@ module.exports = function(controller) {
           err
         );
       }
-      var new_team = false;
+      let new_team = false;
       if (!team) {
         team = {
           id: payload.identity.team_id,
@@ -24,9 +24,9 @@ module.exports = function(controller) {
           name: payload.identity.team,
           incoming_webhooks: [payload.incoming_webhook]
         };
-        var new_team = true;
+        new_team = true;
       } else {
-        var new_channel = true;
+        let new_channel = true;
         for (let i = 0; i < team.incoming_webhooks.length; i++) {
           if (
             team.incoming_webhooks[i].channel ===
@@ -47,7 +47,7 @@ module.exports = function(controller) {
         app_token: payload.access_token
       };
 
-      var testbot = controller.spawn(team.bot);
+      let testbot = controller.spawn(team.bot);
 
       testbot.api.auth.test({}, function(err, bot_auth) {
         if (err) {

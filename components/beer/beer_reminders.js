@@ -28,7 +28,7 @@ module.exports = function(controller) {
 
   function sendMessage(releases) {
     console.log("sending message");
-    var attachments = beer.getAttachments(releases);
+    const attachments = beer.getAttachments(releases);
 
     if (attachments.length > 0) {
       controller.storage.teams.all((err, teams) => {
@@ -37,14 +37,14 @@ module.exports = function(controller) {
         } else {
           for (const team of teams) {
             for (const incoming_webhook of team.incoming_webhooks) {
-              var options = team.bot;
+              let options = team.bot;
               options.incoming_webhook = incoming_webhook;
-              var bot = controller.spawn(options);
-              var message = {
+              const bot = controller.spawn(options);
+              const message = {
                 attachments: attachments
               };
 
-              bot.sendWebhook(
+              /* bot.sendWebhook(
                 {
                   attachments: attachments
                 },
@@ -55,10 +55,9 @@ module.exports = function(controller) {
                   }
                   if (res === "No service") {
                     console.log(res);
-                    list;
                   }
                 }
-              );
+              );*/
             }
           }
         }
