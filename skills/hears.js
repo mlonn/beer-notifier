@@ -44,7 +44,7 @@ module.exports = function(controller) {
       new Date("2017-07-24"),
       new Date("2017-08-01"),
       function(releases) {
-        //var text = releases[release].text
+        //var text = release.text
         var attachments = beer.getAttachments(releases);
         console.log(attachments);
         bot.reply(message, "ölsläpp");
