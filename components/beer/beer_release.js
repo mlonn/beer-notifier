@@ -47,7 +47,7 @@ function getAttachments(releases) {
   const attachments = [];
   for (const release of releases) {
     for (const beer of release.beers) {
-      const date = new Date(release.date);
+      const date = new Date(release.id);
       let title = "";
       if (beer.additional_name) {
         title = `${beer.name} ${beer.additional_name}`;
@@ -60,7 +60,7 @@ function getAttachments(releases) {
         ]} ${date.getDate()}/${date.getMonth() + 1}`
       );
       if (release.beers[0] === beer) {
-        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.date}&sellstartdateto=${release.date}&subcategory=%C3%96l&fullassortment=1`;
+        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
         attachment.pretext = `<${link}|*${weekday[
           date.getDay()
         ]} ${date.getDate()}/${date.getMonth() + 1}*>`;
