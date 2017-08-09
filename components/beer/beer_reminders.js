@@ -44,7 +44,7 @@ module.exports = function(controller) {
                 attachments: attachments
               };
 
-              /* bot.sendWebhook(
+              bot.sendWebhook(
                 {
                   attachments: attachments
                 },
@@ -57,7 +57,7 @@ module.exports = function(controller) {
                     console.log(res);
                   }
                 }
-              );*/
+              );
             }
           }
         }
