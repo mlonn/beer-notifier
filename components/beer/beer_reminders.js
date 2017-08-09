@@ -23,27 +23,28 @@ module.exports = function(controller) {
     if (err) {
       console.log(err);
     }
-    beer.checkNewReleases(new Date(), sendMessage);
+    beer.getNewReleases(new Date(), sendMessage, controller);
   });
 
   function sendMessage(releases) {
     console.log("sending message");
-    var attachments = beer.getAttachments(releases);
+    const attachments = beer.getAttachments(releases);
+
     if (attachments.length > 0) {
-      controller.storage.teams.all(function(err, list) {
+      controller.storage.teams.all((err, teams) => {
         if (err) {
           throw new Error("Error: Could not load existing teams:", err);
         } else {
-          for (let i = 0; i < list.length; i++) {
-            for (let j = 0; j < list[i].incoming_webhooks.length; j++) {
-              var options = list[i].bot;
-              options.incoming_webhook = list[i].incoming_webhooks[j];
-              var bot = controller.spawn(options);
-              var message = {
+          for (const team of teams) {
+            for (const incoming_webhook of team.incoming_webhooks) {
+              let options = team.bot;
+              options.incoming_webhook = incoming_webhook;
+              const bot = controller.spawn(options);
+              const message = {
                 attachments: attachments
               };
 
-              bot.sendWebhook(
+              /* bot.sendWebhook(
                 {
                   attachments: attachments
                 },
@@ -54,10 +55,9 @@ module.exports = function(controller) {
                   }
                   if (res === "No service") {
                     console.log(res);
-                    list;
                   }
                 }
-              );
+              );*/
             }
           }
         }
@@ -65,42 +65,3 @@ module.exports = function(controller) {
     }
   }
 };
-/* const weeklyReminder = schedule.scheduleJob('* * * 12 7', function(err) {
-    if (err) {
-      console.log(err)
-    }
-    const from = new Date()
-    const to = new Date()
-    to.setDate(from.getDate()+8)
-    beer.getBeerReleases(from, to)
-  })
-
-  const dailyUpdate = schedule.scheduleJob('* * * 12 *', function(err) {
-    if (err) {
-      console.log(err)
-    }
-    beer.checkNewReleases(new Date(), sendMessage);
-  })
-
-  console.log("BOTS  " + managedBots[0])
-
-}
-
-
-    /*  sendMessage: function(releases) {
-        var attachments = beer.getAttachments(releases)
-        if (attachments.length > 0) {
-          var timestamp = (new Date).getTime()/1000;
-          bot.sendWebhook({
-            attachments: attachments,
-            ts: timestamp
-          }, function(err, res) {
-            console.log(res)
-              if (err) {
-                console.log(err)
-              } else {
-                console.log('message sent!');
-              }
-          });
-        }
-      } */

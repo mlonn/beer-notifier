@@ -1,6 +1,5 @@
 const request = require("request-promise-native");
 const json = require("json");
-var ReleaseModel = require("./beerReleaseModel.js");
 
 const weekday = new Array(7);
 weekday[0] = "Söndag";
@@ -23,26 +22,22 @@ const Attachment = function(fallback) {
   this.mrkdwn_in = ["text", "fields", "pretext"];
 };
 
-const Release = function(release) {
-  this.release = release;
-  this.beers = [];
-};
-
-function getReleases(unreleased_beers) {
+function getReleases(beers) {
   const releases = [];
   let sales_start = "";
   let release;
-  for (const beer in unreleased_beers) {
-    unreleased_beers[beer].beer_type = unreleased_beers[beer].type;
-    unreleased_beers[beer].type;
-    if (sales_start !== unreleased_beers[beer].sales_start) {
-      sales_start = unreleased_beers[beer].sales_start;
-      release = new Release(sales_start);
+  for (const beer of beers) {
+    beer.beer_type = beer.type;
+    beer.type;
+    if (sales_start !== beer.sales_start) {
+      sales_start = beer.sales_start;
+      release = {
+        id: sales_start,
+        beers: [beer]
+      };
       releases.push(release);
-
-      release.beers = [unreleased_beers[beer]];
     } else {
-      release.beers.push(unreleased_beers[beer]);
+      release.beers.push(beer);
     }
   }
   return releases;
@@ -50,98 +45,80 @@ function getReleases(unreleased_beers) {
 
 function getAttachments(releases) {
   const attachments = [];
-  for (const release in releases) {
-    for (const beer in releases[release].beers) {
-      const date = new Date(releases[release].release);
+  for (const release of releases) {
+    for (const beer of release.beers) {
+      const date = new Date(release.date);
       let title = "";
-      if (releases[release].beers[beer].additional_name) {
-        title = `${releases[release].beers[beer].name} ${releases[release]
-          .beers[beer].additional_name}\n`;
+      if (beer.additional_name) {
+        title = `${beer.name} ${beer.additional_name}`;
       } else {
-        title = `${releases[release].beers[beer].name}\n`;
+        title = `${beer.name}`;
       }
       const attachment = new Attachment(
-        `${title}släpps${weekday[
+        `${title} släpps ${weekday[
           date.getDay()
         ]} ${date.getDate()}/${date.getMonth() + 1}`
       );
-
-      if (releases[release].beers[0] === releases[release].beers[beer]) {
-        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${releases[
-          release
-        ].release}&sellstartdateto=${releases[release]
-          .release}&subcategory=%C3%96l&fullassortment=1`;
+      if (release.beers[0] === beer) {
+        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.date}&sellstartdateto=${release.date}&subcategory=%C3%96l&fullassortment=1`;
         attachment.pretext = `<${link}|*${weekday[
           date.getDay()
         ]} ${date.getDate()}/${date.getMonth() + 1}*>`;
       }
       attachment.title = title;
-      attachment.title_link = `https://systembolaget.se/${releases[release]
-        .beers[beer].nr}`;
+      attachment.title_link = `https://systembolaget.se/${beer.nr}`;
+      attachment.id = `${beer.nr}`;
       attachment.fields.push(new Field("*Typ*: ", true));
-      attachment.fields.push(
-        new Field(`${releases[release].beers[beer].type}\n`, true)
-      );
+      attachment.fields.push(new Field(`${beer.type}`, true));
       attachment.fields.push(new Field("*Stil*: ", true));
-      if (releases[release].beers[beer].style) {
-        attachment.fields.push(
-          new Field(`${releases[release].beers[beer].style}\n`, true)
-        );
+      if (beer.style) {
+        attachment.fields.push(new Field(`${beer.style}`, true));
       } else {
         attachment.fields.push(new Field("-", true));
       }
       attachment.fields.push(new Field("*Pris*: ", true));
       attachment.fields.push(
-        new Field(
-          `${releases[release].beers[beer].price.amount} ${releases[release]
-            .beers[beer].price.currency}\n`,
-          true
-        )
+        new Field(`${beer.price.amount} ${beer.price.currency}`, true)
       );
       attachment.fields.push(new Field("*Alkohol*:", true));
-      attachment.fields.push(
-        new Field(`${releases[release].beers[beer].alcohol}\n`, true)
-      );
+      attachment.fields.push(new Field(`${beer.alcohol}`, true));
       attachment.fields.push(new Field("*Bryggeri*: ", true));
-      attachment.fields.push(
-        new Field(`${releases[release].beers[beer].producer}\n`, true)
-      );
+      attachment.fields.push(new Field(`${beer.producer}`, true));
       attachments.push(attachment);
     }
   }
+
   return attachments;
 }
 
-function checkNewReleases(from, callback) {
+function getNewReleases(from, callback, controller) {
   getBeerReleases(from, null, releases => {
-    const datestring = getDateString(from);
-    const newReleases = [];
-    for (const release in releases) {
-      newReleases.push(releases[release].release);
-      console.log(releases[release].release);
-    }
-    // release:releases[release].release
-    ReleaseModel.find({ release: { $in: newReleases } }, (err, response) => {
-      console.log(response);
-      console.log(releases.length);
-      for (const res in response) {
-        for (var rel in releases) {
-          if (releases[rel].release == response[res].release) {
-            releases.splice(rel, 1);
+    let releaseDates = [];
+    if (releases.length > 0) {
+      for (const release of releases) {
+        releaseDates.push(release.id);
+      }
+
+      controller.storage.releases.find(
+        { id: { $in: releaseDates } },
+        (err, storedReleases) => {
+          if (storedReleases) {
+            for (const storedRelease of storedReleases) {
+              for (const release of releases) {
+                if (release.id === storedRelease.id) {
+                  releases.splice(releases.indexOf(release), 1);
+                }
+              }
+            }
           }
+
+          for (const release of releases) {
+            controller.storage.releases.save(release);
+          }
+          callback(releases);
         }
-      }
-
-      for (var rel in releases) {
-        const newRelease = new ReleaseModel({ release: releases[rel].release });
-        newRelease.save();
-      }
-
-      console.log(releases.length);
-      if (releases.length > 0) {
-        callback(releases);
-      }
-    });
+      );
+    }
   });
 }
 
@@ -172,4 +149,4 @@ function urlFromDate(from, to) {
   return `https://bolaget.io/products?product_group=Öl&sort=sales_start:asc&sales_start_from=${sales_start_from}&limit=100`;
 }
 
-module.exports = { getBeerReleases, getAttachments, checkNewReleases };
+module.exports = { getBeerReleases, getAttachments, getNewReleases };

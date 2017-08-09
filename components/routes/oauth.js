@@ -1,18 +1,18 @@
-var debug = require("debug")("botkit:oauth");
+const debug = require("debug")("botkit:oauth");
 
 module.exports = function(webserver, controller) {
-  var handler = {
+  const handler = {
     login: function(req, res) {
       res.redirect(controller.getAuthorizeURL());
     },
     oauth: function(req, res) {
-      var code = req.query.code;
-      var state = req.query.state;
+      const code = req.query.code;
+      const state = req.query.state;
 
       // we need to use the Slack API, so spawn a generic bot with no token
-      var slackapi = controller.spawn({});
+      const slackapi = controller.spawn({});
 
-      var opts = {
+      const opts = {
         client_id: controller.config.clientId,
         client_secret: controller.config.clientSecret,
         code: code
@@ -25,7 +25,7 @@ module.exports = function(webserver, controller) {
         }
 
         // what scopes did we get approved for?
-        var scopes = auth.scope.split(/\,/);
+        const scopes = auth.scope.split(/\,/);
 
         // use the token we got from the oauth
         // to call auth.test to make sure the token is valid

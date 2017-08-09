@@ -1,11 +1,7 @@
 require("dotenv").config();
 const Botkit = require("botkit");
-const mongoose = require("mongoose");
 const schedule = require("node-schedule");
 const beer = require("./components/beer/beer_release");
-
-mongoose.Promise = global.Promise;
-mongoose.connect(process.env.MONGODB_URI);
 
 const botOptions = {
   clientId: process.env.clientId,
@@ -25,7 +21,8 @@ const botOptions = {
 // Mongo is automatically configured when deploying to Heroku
 if (process.env.MONGODB_URI) {
   const mongoStorage = require("botkit-storage-mongo")({
-    mongoUri: process.env.MONGODB_URI
+    mongoUri: process.env.MONGODB_URI,
+    tables: ["releases"]
   });
   botOptions.storage = mongoStorage;
 } else {

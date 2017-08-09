@@ -1,4 +1,4 @@
-var debug = require("debug")("botkit:onboarding");
+const debug = require("debug")("botkit:onboarding");
 
 module.exports = function(controller) {
   controller.on("onboard", function(bot) {
