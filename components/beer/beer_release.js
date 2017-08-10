@@ -59,12 +59,7 @@ function getAttachments(releases) {
           date.getDay()
         ]} ${date.getDate()}/${date.getMonth() + 1}`
       );
-      if (release.beers[0] === beer) {
-        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
-        attachment.pretext = `<${link}|*${weekday[
-          date.getDay()
-        ]} ${date.getDate()}/${date.getMonth() + 1}*>`;
-      }
+
       attachment.title = title;
       attachment.title_link = `https://systembolaget.se/${beer.nr}`;
       attachment.id = `${beer.nr}`;
