@@ -1,5 +1,6 @@
 var wordfilter = require("wordfilter");
 var beer = require("../components/beer/beer_release");
+const chrono = require("chrono-node");
 
 module.exports = function(controller) {
   /* Collect some very simple runtime stats for use in the uptime/debug command */
@@ -35,11 +36,30 @@ module.exports = function(controller) {
     }
   );
 
+  controller.on("bot_message", function(bot, message) {
+    date = chrono.parseDate(message.text);
+    releases = beer.getBeerReleases(
+      chrono.parseDate(message.text),
+      chrono.parseDate(message.text),
+      releases => {
+        const attachments = beer.getAttachments(releases);
+        const reply = {
+          attachments: attachments,
+          thread_ts: message.ts
+        };
+        bot.reply(message, reply, err => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      }
+    );
+  });
+
   controller.hears(["^ölsläpp"], "direct_message,direct_mention", function(
     bot,
     message
   ) {
-    console.log(message);
     beer.getBeerReleases(
       new Date("2017-07-24"),
       new Date("2017-08-01"),

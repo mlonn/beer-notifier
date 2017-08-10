@@ -91,7 +91,24 @@ function getAttachments(releases) {
   return attachments;
 }
 
-function getNewReleases(from, callback, controller) {
+function getMessages(releases) {
+  const messages = [];
+  for (const release of releases) {
+    const date = new Date(release.id);
+    const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
+
+    const message = {
+      text: `<${link}|*${weekday[
+        date.getDay()
+      ]} ${date.getDate()}/${date.getMonth() + 1}*>`
+    };
+
+    messages.push(message);
+  }
+
+  return messages;
+}
+function getNewReleases(from, controller, callback) {
   getBeerReleases(from, null, releases => {
     let releaseDates = [];
     if (releases.length > 0) {
@@ -149,4 +166,9 @@ function urlFromDate(from, to) {
   return `https://bolaget.io/products?product_group=Öl&sort=sales_start:asc&sales_start_from=${sales_start_from}&limit=100`;
 }
 
-module.exports = { getBeerReleases, getAttachments, getNewReleases };
+module.exports = {
+  getMessages,
+  getBeerReleases,
+  getAttachments,
+  getNewReleases
+};

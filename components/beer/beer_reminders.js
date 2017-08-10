@@ -10,27 +10,36 @@ module.exports = function(controller) {
     }
   };
 
-  const weeklyReminder = schedule.scheduleJob("* * * * 12 7", function(err) {
+  const weeklyReminder = schedule.scheduleJob(" * * * 12 7", function(err) {
     if (err) {
       console.log(err);
     }
     const from = new Date();
     const to = from.getNextWeekDay(1);
-    beer.getBeerReleases(from, to, sendMessage);
+    beer.getBeerReleases(from, to, releases => {
+      const messages = beer.getMessages(releases);
+
+      for (message of messages) {
+        sendMessage(message);
+      }
+    });
   });
 
-  const dailyUpdate = schedule.scheduleJob("* * * 12 *", function(err) {
+  const dailyUpdate = schedule.scheduleJob(" * * * 12 *", function(err) {
     if (err) {
       console.log(err);
     }
-    beer.getNewReleases(new Date(), sendMessage, controller);
+    beer.getNewReleases(new Date(), controller, releases => {
+      const messages = beer.getMessages(releases);
+      for (message of messages) {
+        sendMessage(message);
+      }
+    });
   });
 
-  function sendMessage(releases) {
-    console.log("sending message");
-    const attachments = beer.getAttachments(releases);
-
-    if (attachments.length > 0) {
+  function sendMessage(message) {
+    if (message.text || message.attachments.length > 0) {
+      console.log("sending message");
       controller.storage.teams.all((err, teams) => {
         if (err) {
           throw new Error("Error: Could not load existing teams:", err);
@@ -40,24 +49,15 @@ module.exports = function(controller) {
               let options = team.bot;
               options.incoming_webhook = incoming_webhook;
               const bot = controller.spawn(options);
-              const message = {
-                attachments: attachments
-              };
-
-              bot.sendWebhook(
-                {
-                  attachments: attachments
-                },
-                function(err, res) {
-                  console.log(res);
-                  if (err) {
-                    console.log(err);
-                  }
-                  if (res === "No service") {
-                    console.log(res);
-                  }
+              bot.sendWebhook(message, function(err, res) {
+                console.log(res);
+                if (err) {
+                  console.log(err);
                 }
-              );
+                if (res === "No service") {
+                  console.log(res);
+                }
+              });
             }
           }
         }
