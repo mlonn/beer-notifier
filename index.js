@@ -6,15 +6,8 @@ const beer = require("./components/beer/beer_release");
 const botOptions = {
   clientId: process.env.clientId,
   clientSecret: process.env.clientSecret,
-  //debug: true,
-  scopes: [
-    "bot",
-    "incoming-webhook",
-    "channels:history",
-    "groups:history",
-    "im:history",
-    "mpim:history"
-  ]
+  // debug: true,
+  scopes: ["incoming-webhook", "bot", "commands"]
 };
 
 // Use a mongo database if specified, otherwise store in a JSON file local to the app.
