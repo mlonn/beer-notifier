@@ -10,7 +10,7 @@ module.exports = function(controller) {
     }
   };
 
-  const weeklyReminder = schedule.scheduleJob(" * * * 12 7", function(err) {
+  const weeklyReminder = schedule.scheduleJob(" * 12 * * 7", function(err) {
     if (err) {
       console.log(err);
     }
@@ -25,10 +25,11 @@ module.exports = function(controller) {
     });
   });
 
-  const dailyUpdate = schedule.scheduleJob(" * * * 12 *", function(err) {
+  const dailyUpdate = schedule.scheduleJob("* 12 * * *", function(err) {
     if (err) {
       console.log(err);
     }
+    console.log("Running daily update");
     beer.getNewReleases(new Date(), controller, releases => {
       const messages = beer.getMessages(releases);
       for (message of messages) {
