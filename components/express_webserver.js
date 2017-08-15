@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const querystring = require("querystring");
 const debug = require("debug")("botkit:webserver");
 
-module.exports = function(controller) {
+module.exports = controller => {
   const webserver = express();
   webserver.use(bodyParser.json());
   webserver.use(bodyParser.urlencoded({ extended: true }));
@@ -14,7 +14,7 @@ module.exports = function(controller) {
     "url",
     process.env.APP_URL || "localhost:" + webserver.get("port")
   );
-  webserver.listen(webserver.get("port"), null, function() {
+  webserver.listen(webserver.get("port"), null, () => {
     debug(
       "Express webserver configured and listening at http://localhost:" +
         process.env.PORT || 5000
@@ -23,7 +23,7 @@ module.exports = function(controller) {
 
   // import all the pre-defined routes that are present in /components/routes
   const normalizedPath = require("path").join(__dirname, "routes");
-  require("fs").readdirSync(normalizedPath).forEach(function(file) {
+  require("fs").readdirSync(normalizedPath).forEach(file => {
     require("./routes/" + file)(webserver, controller);
   });
 

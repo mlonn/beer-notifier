@@ -2,26 +2,26 @@ var wordfilter = require("wordfilter");
 var beer = require("../components/beer/beer_release");
 const chrono = require("chrono-node");
 
-module.exports = function(controller) {
+module.exports = controller => {
   /* Collect some very simple runtime stats for use in the uptime/debug command */
   var stats = {
     triggers: 0,
     convos: 0
   };
 
-  controller.on("heard_trigger", function() {
+  controller.on("heard_trigger", () => {
     stats.triggers++;
   });
 
-  controller.on("conversationStarted", function() {
+  controller.on("conversationStarted", () => {
     stats.convos++;
   });
 
   controller.hears(
     ["^uptime", "^debug"],
     "direct_message,direct_mention",
-    function(bot, message) {
-      bot.createConversation(message, function(err, convo) {
+    (bot, message) => {
+      bot.createConversation(message, (err, convo) => {
         if (!err) {
           convo.setVar("uptime", formatUptime(process.uptime()));
           convo.setVar("convos", stats.convos);
@@ -36,7 +36,7 @@ module.exports = function(controller) {
     }
   );
 
-  controller.on("bot_message", function(bot, message) {
+  controller.on("bot_message", (bot, message) => {
     date = chrono.parseDate(message.text);
     releases = beer.getBeerReleases(
       chrono.parseDate(message.text),
@@ -56,25 +56,26 @@ module.exports = function(controller) {
     );
   });
 
-  controller.hears(["^ölsläpp"], "direct_message,direct_mention", function(
-    bot,
-    message
-  ) {
-    beer.getBeerReleases(
-      new Date("2017-07-24"),
-      new Date("2017-08-01"),
-      function(releases) {
-        const attachments = beer.getAttachments(releases);
-        console.log(attachments);
-        bot.reply(message, "ölsläpp");
-      }
-    );
-  });
+  controller.hears(
+    ["^ölsläpp"],
+    "direct_message,direct_mention",
+    (bot, message) => {
+      beer.getBeerReleases(
+        new Date("2017-07-24"),
+        new Date("2017-08-01"),
+        releases => {
+          const attachments = beer.getAttachments(releases);
+          console.log(attachments);
+          bot.reply(message, "ölsläpp");
+        }
+      );
+    }
+  );
 
   controller.hears(
     ["^say (.*)", "^say"],
     "direct_message,direct_mention",
-    function(bot, message) {
+    (bot, message) => {
       if (message.match[1]) {
         if (!wordfilter.blacklisted(message.match[1])) {
           bot.reply(message, message.match[1]);

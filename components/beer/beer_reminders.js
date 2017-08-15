@@ -1,8 +1,8 @@
 const schedule = require("node-schedule");
 const beer = require("./beer_release");
 
-module.exports = function(controller) {
-  Date.prototype.getNextWeekDay = function(d) {
+module.exports = controller => {
+  Date.prototype.getNextWeekDay = d => {
     if (d) {
       var next = this;
       next.setDate(this.getDate() - this.getDay() + 7 + d);
@@ -10,7 +10,7 @@ module.exports = function(controller) {
     }
   };
 
-  const weeklyReminder = schedule.scheduleJob(" * 12 * * 7", function(err) {
+  const weeklyReminder = schedule.scheduleJob(" * 12 * * 7", err => {
     if (err) {
       console.log(err);
     }
@@ -25,7 +25,7 @@ module.exports = function(controller) {
     });
   });
 
-  const dailyUpdate = schedule.scheduleJob("0 12 * * *", function(err) {
+  const dailyUpdate = schedule.scheduleJob("0 12 * * *", err => {
     if (err) {
       console.log(err);
     }
@@ -50,7 +50,7 @@ module.exports = function(controller) {
               let options = team.bot;
               options.incoming_webhook = incoming_webhook;
               const bot = controller.spawn(options);
-              bot.sendWebhook(message, function(err, res) {
+              bot.sendWebhook(message, (err, res) => {
                 console.log(res);
                 if (err) {
                   console.log(err);

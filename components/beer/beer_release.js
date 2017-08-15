@@ -10,12 +10,12 @@ weekday[4] = "Torsdag";
 weekday[5] = "Fredag";
 weekday[6] = "Lördag";
 
-const Field = function(value, short) {
+const Field = (value, short) => {
   this.value = value;
   this.short = short;
 };
 
-const Attachment = function(fallback) {
+const Attachment = fallback => {
   this.fallback = fallback;
   this.color = "#36a64f";
   this.fields = [];
@@ -59,7 +59,12 @@ function getAttachments(releases) {
           date.getDay()
         ]} ${date.getDate()}/${date.getMonth() + 1}`
       );
-
+      if (release.beers[0] === beer) {
+        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
+        attachment.pretext = `<${link}|*${weekday[
+          date.getDay()
+        ]} ${date.getDate()}/${date.getMonth() + 1}*>`;
+      }
       attachment.title = title;
       attachment.title_link = `https://systembolaget.se/${beer.nr}`;
       attachment.id = `${beer.nr}`;
