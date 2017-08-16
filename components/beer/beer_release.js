@@ -10,12 +10,12 @@ weekday[4] = "Torsdag";
 weekday[5] = "Fredag";
 weekday[6] = "Lördag";
 
-const Field = (value, short) => {
+const Field = function (value, short) {
   this.value = value;
   this.short = short;
 };
 
-const Attachment = fallback => {
+const Attachment = function(fallback) {
   this.fallback = fallback;
   this.color = "#36a64f";
   this.fields = [];
