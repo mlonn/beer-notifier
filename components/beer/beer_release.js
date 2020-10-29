@@ -15,7 +15,7 @@ const Field = function (value, short) {
   this.short = short;
 };
 
-const Attachment = function(fallback) {
+const Attachment = function (fallback) {
   this.fallback = fallback;
   this.color = "#36a64f";
   this.fields = [];
@@ -33,7 +33,7 @@ function getReleases(beers) {
       sales_start = beer.sales_start;
       release = {
         id: sales_start,
-        beers: [beer]
+        beers: [beer],
       };
       releases.push(release);
     } else {
@@ -55,15 +55,15 @@ function getAttachments(releases) {
         title = `${beer.name}`;
       }
       const attachment = new Attachment(
-        `${title} släpps ${weekday[
-          date.getDay()
-        ]} ${date.getDate()}/${date.getMonth() + 1}`
+        `${title} släpps ${weekday[date.getDay()]} ${date.getDate()}/${
+          date.getMonth() + 1
+        }`
       );
       if (release.beers[0] === beer) {
-        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
-        attachment.pretext = `<${link}|*${weekday[
-          date.getDay()
-        ]} ${date.getDate()}/${date.getMonth() + 1}*>`;
+        const link = `https://www.systembolaget.se/sok/?categoryLevel1=%C3%96l&productLaunchFrom=${release.id}&productLaunchTo=${release.id}`;
+        attachment.pretext = `<${link}|*${
+          weekday[date.getDay()]
+        } ${date.getDate()}/${date.getMonth() + 1}*>`;
       }
       attachment.title = title;
       attachment.title_link = `https://systembolaget.se/${beer.nr}`;
@@ -95,12 +95,12 @@ function getMessages(releases) {
   const messages = [];
   for (const release of releases) {
     const date = new Date(release.id);
-    const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
+    const link = `https://www.systembolaget.se/sok/?categoryLevel1=%C3%96l&productLaunchFrom=${release.id}&productLaunchTo=${release.id}`;
 
     const message = {
-      text: `<${link}|*${weekday[
-        date.getDay()
-      ]} ${date.getDate()}/${date.getMonth() + 1}*>`
+      text: `<${link}|*${weekday[date.getDay()]} ${date.getDate()}/${
+        date.getMonth() + 1
+      }*>`,
     };
 
     messages.push(message);
@@ -109,7 +109,7 @@ function getMessages(releases) {
   return messages;
 }
 function getNewReleases(from, controller, callback) {
-  getBeerReleases(from, null, releases => {
+  getBeerReleases(from, null, (releases) => {
     let releaseDates = [];
     if (releases.length > 0) {
       for (const release of releases) {
@@ -170,5 +170,5 @@ module.exports = {
   getMessages,
   getBeerReleases,
   getAttachments,
-  getNewReleases
+  getNewReleases,
 };
