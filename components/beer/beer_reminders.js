@@ -25,7 +25,7 @@ module.exports = controller => {
     });
   });
 
-  const dailyUpdate = schedule.scheduleJob("15 * * * *", err => {
+  const dailyUpdate = schedule.scheduleJob("0 12 * * *", err => {
     if (err) {
       console.log(err);
     }
