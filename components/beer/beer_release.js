@@ -168,6 +168,7 @@ function normalizeModel(systembolaget) {
 
 function getBeerReleases(from, to, callback) {
   const url = urlFromDate(from, to);
+  console.log({url});
   request(
     url,
     {
