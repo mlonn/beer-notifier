@@ -1,5 +1,6 @@
 {
   "name": "slack-bot",
+  "engines" : { "node" : "10.6.0" },
   "version": "1.0.0",
   "description": "A app that sends data to a slack team with new beer",
   "main": "index.js",
