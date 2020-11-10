@@ -60,7 +60,7 @@ function getAttachments(releases) {
         } ${date.getDate()}/${date.getMonth() + 1}`
       );
       if (release.beers[0] === beer) {
-        const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
+        const link = `https://www.systembolaget.se/sok/?categoryLevel1=%C3%96l&productLaunchFrom=${release.id}&productLaunchTo=${release.id}`;
         attachment.pretext = `<${link}|*${
           weekday[date.getDay()]
         } ${date.getDate()}/${date.getMonth() + 1}*>`;
@@ -78,7 +78,7 @@ function getAttachments(releases) {
       }
       attachment.fields.push(new Field("*Pris*: ", true));
       attachment.fields.push(
-        new Field(`${beer.price.amount} ${beer.price.currency}`, true)
+        new Field(`${beer.price} SEK`, true)
       );
       attachment.fields.push(new Field("*Alkohol*:", true));
       attachment.fields.push(new Field(`${beer.alcohol}`, true));
@@ -95,7 +95,7 @@ function getMessages(releases) {
   const messages = [];
   for (const release of releases) {
     const date = new Date(release.id);
-    const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
+    const link = `https://www.systembolaget.se/sok/?categoryLevel1=%C3%96l&productLaunchFrom=${release.id}&productLaunchTo=${release.id}`;
 
     const message = {
       text: `<${link}|*${
