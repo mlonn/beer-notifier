@@ -28,6 +28,7 @@
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "request-promise-native": "^1.0.4",
+    "skills-validator": "./skills-validator/skills-validator-1.0.0.tgz",
     "wordfilter": "^0.2.6"
   },
   "devDependencies": {
