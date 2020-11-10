@@ -174,7 +174,7 @@ function getBeerReleases(from, to, callback) {
     {
       url,
       headers: {
-        "ocp-apim-subscription-key": "874f1ddde97d43f79d8a1b161a77ad31",
+        "ocp-apim-subscription-key": process.env.session_key,
       },
     },
     (err, res, body) => {
