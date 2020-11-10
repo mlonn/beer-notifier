@@ -10,7 +10,7 @@ weekday[4] = "Torsdag";
 weekday[5] = "Fredag";
 weekday[6] = "Lördag";
 
-const Field = function (value, short) {
+const Field = function(value, short) {
   this.value = value;
   this.short = short;
 };
@@ -33,7 +33,7 @@ function getReleases(beers) {
       sales_start = beer.sales_start;
       release = {
         id: sales_start,
-        beers: [beer]
+        beers: [beer],
       };
       releases.push(release);
     } else {
@@ -55,15 +55,15 @@ function getAttachments(releases) {
         title = `${beer.name}`;
       }
       const attachment = new Attachment(
-        `${title} släpps ${weekday[
-          date.getDay()
-        ]} ${date.getDate()}/${date.getMonth() + 1}`
+        `${title} släpps ${
+          weekday[date.getDay()]
+        } ${date.getDate()}/${date.getMonth() + 1}`
       );
       if (release.beers[0] === beer) {
         const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
-        attachment.pretext = `<${link}|*${weekday[
-          date.getDay()
-        ]} ${date.getDate()}/${date.getMonth() + 1}*>`;
+        attachment.pretext = `<${link}|*${
+          weekday[date.getDay()]
+        } ${date.getDate()}/${date.getMonth() + 1}*>`;
       }
       attachment.title = title;
       attachment.title_link = `https://systembolaget.se/${beer.nr}`;
@@ -98,9 +98,9 @@ function getMessages(releases) {
     const link = `https://www.systembolaget.se/sok-dryck/?sellstartdatefrom=${release.id}&sellstartdateto=${release.id}&subcategory=%C3%96l&fullassortment=1`;
 
     const message = {
-      text: `<${link}|*${weekday[
-        date.getDay()
-      ]} ${date.getDate()}/${date.getMonth() + 1}*>`
+      text: `<${link}|*${
+        weekday[date.getDay()]
+      } ${date.getDate()}/${date.getMonth() + 1}*>`,
     };
 
     messages.push(message);
@@ -109,7 +109,7 @@ function getMessages(releases) {
   return messages;
 }
 function getNewReleases(from, controller, callback) {
-  getBeerReleases(from, null, releases => {
+  getBeerReleases(from, null, (releases) => {
     let releaseDates = [];
     if (releases.length > 0) {
       for (const release of releases) {
@@ -139,13 +139,53 @@ function getNewReleases(from, controller, callback) {
   });
 }
 
+function normalizeModel(systembolaget) {
+  const {
+    productLaunchDate: sales_start,
+    productNameBold: name,
+    productNameThin: additional_name,
+    productNumber: nr,
+    alcoholPercentage: alcohol,
+    categoryLevel2: type,
+    categoryLevel3: style,
+    price,
+    producerName: producer
+  } = systembolaget;
+  const bolagetIO = {
+    sales_start,
+    name,
+    additional_name,
+    nr,
+    type,
+    style,
+    alcohol,
+    producer,
+    price,
+    ...systembolaget,
+  };
+  return bolagetIO;
+}
+
 function getBeerReleases(from, to, callback) {
   const url = urlFromDate(from, to);
-  request(url, (err, res, body) => {
-    const unreleased_beers = JSON.parse(body);
-    const releases = getReleases(unreleased_beers);
-    callback(releases);
-  }).end();
+  request(
+    url,
+    {
+      url,
+      headers: {
+        "ocp-apim-subscription-key": "874f1ddde97d43f79d8a1b161a77ad31",
+      },
+    },
+    (err, res, body) => {
+      const unreleased_beers = JSON.parse(body);
+      const releases = getReleases(
+        unreleased_beers.products
+          .filter((p) => p.categoryLevel1 === "Öl")
+          .map(normalizeModel)
+      );
+      callback(releases);
+    }
+  ).end();
 }
 
 function getDateString(date) {
@@ -161,14 +201,14 @@ function urlFromDate(from, to) {
   const sales_start_from = getDateString(from);
   if (to !== null) {
     const sales_start_to = getDateString(to);
-    return `https://bolaget.io/products?product_group=Öl&sort=sales_start:asc&sales_start_from=${sales_start_from}&sales_start_to=${sales_start_to}&limit=100`;
+    return `https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=1000categoryLevel1=Öl&productLaunch.min=${sales_start_from}&productLaunch.max=${sales_start_to}&isEcoFriendlyPackage=false&isInDepotStockForFastDelivery=false`;
   }
-  return `https://bolaget.io/products?product_group=Öl&sort=sales_start:asc&sales_start_from=${sales_start_from}&limit=100`;
+  return `https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=1000categoryLevel1=Öl&productLaunch.min=${sales_start_from}1isEcoFriendlyPackage=false&isInDepotStockForFastDelivery=false`;
 }
 
 module.exports = {
   getMessages,
   getBeerReleases,
   getAttachments,
-  getNewReleases
+  getNewReleases,
 };

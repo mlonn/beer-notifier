@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest test .",
+    "updateSnapshots": "jest test --updateSnapshot"
   },
   "keywords": [],
   "author": "Mikael Lönn",
@@ -33,6 +34,7 @@
     "eslint": "^4.3.0",
     "eslint-config-airbnb-base": "^11.3.1",
     "eslint-plugin-import": "^2.7.0",
+    "jest": "^26.6.3",
     "nodemon": "^1.11.0",
     "prettier": "^1.5.3"
   }
