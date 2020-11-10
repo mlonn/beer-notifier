@@ -202,9 +202,9 @@ function urlFromDate(from, to) {
   const sales_start_from = getDateString(from);
   if (to !== null) {
     const sales_start_to = getDateString(to);
-    return `https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=1000categoryLevel1=Öl&productLaunch.min=${sales_start_from}&productLaunch.max=${sales_start_to}&isEcoFriendlyPackage=false&isInDepotStockForFastDelivery=false`;
+    return `https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=3000&categoryLevel1=%C3%96l&productLaunch.min=${sales_start_from}&productLaunch.max=${sales_start_to}&isEcoFriendlyPackage=false&isInDepotStockForFastDelivery=false`;
   }
-  return `https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=1000categoryLevel1=Öl&productLaunch.min=${sales_start_from}1isEcoFriendlyPackage=false&isInDepotStockForFastDelivery=false`;
+  return `https://api-extern.systembolaget.se/sb-api-ecommerce/v1/productsearch/search?size=3000&categoryLevel1=%C3%96l&productLaunch.min=${sales_start_from}&isEcoFriendlyPackage=false&isInDepotStockForFastDelivery=false`;
 }
 
 module.exports = {
