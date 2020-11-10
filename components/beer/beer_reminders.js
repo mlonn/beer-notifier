@@ -10,7 +10,7 @@ module.exports = controller => {
     }
   };
 
-  const weeklyReminder = schedule.scheduleJob(" * 12 * * 7", err => {
+  const weeklyReminder = schedule.scheduleJob("* 12 * * 7", err => {
     if (err) {
       console.log(err);
     }
@@ -25,7 +25,7 @@ module.exports = controller => {
     });
   });
 
-  const dailyUpdate = schedule.scheduleJob(" 0 12 * * *", err => {
+  const dailyUpdate = schedule.scheduleJob("* 12 * * *", err => {
     if (err) {
       console.log(err);
     }

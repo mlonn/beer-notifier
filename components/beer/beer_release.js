@@ -32,7 +32,7 @@ function getReleases(beers) {
     if (sales_start !== beer.sales_start) {
       sales_start = beer.sales_start;
       release = {
-        id: sales_start,
+        id: sales_start.split("T")[0],
         beers: [beer],
       };
       releases.push(release);
