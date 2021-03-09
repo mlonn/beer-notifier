@@ -12,9 +12,9 @@ const botOptions = {
 
 // Use a mongo database if specified, otherwise store in a JSON file local to the app.
 // Mongo is automatically configured when deploying to Heroku
-if (process.env.MONGODB_URI) {
+if (process.env.DB_URI) {
   const mongoStorage = require("botkit-storage-mongo")({
-    mongoUri: process.env.MONGODB_URI,
+    mongoUri: process.env.DB_URI,
     tables: ["releases"]
   });
   botOptions.storage = mongoStorage;
